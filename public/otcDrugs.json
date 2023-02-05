@@ -1,0 +1,97 @@
+[
+    {
+        "id": 1,
+        "title": "Fever",
+        "img": "https://i.ibb.co/7YrdzFR/fever.png"
+    },
+    {
+        "id": 2,
+        "title": "Gastrointestinal",
+        "img": "https://i.ibb.co/0YG8K2j/Stomachache-bro.png"
+    },
+    {
+        "id": 3,
+        "title": "Eczema",
+        "img": "https://i.ibb.co/V3Zp6VW/eczema.png"
+    },
+    {
+        "id": 4,
+        "title": "Nasal",
+        "img": "https://i.ibb.co/9gNq3gZ/Nasal-spray-pana.png"
+    },
+    {
+        "id": 5,
+        "title": "Gastric",
+        "img": "https://i.ibb.co/kQNzmmH/Stomachache-pana.png"
+    },
+    {
+        "id": 6,
+        "title": "Spasm",
+        "img": "https://i.ibb.co/RhvXP5H/Spasm.png"
+    },
+    {
+        "id": 7,
+        "title": "Diarrhea",
+        "img": "https://i.ibb.co/Vp3Nk2Z/diarrhea.webp"
+    },
+    {
+        "id": 8,
+        "title": "Virus Infection",
+        "img": "https://i.ibb.co/XF8NDf3/Virus-pana.png"
+    },
+    {
+        "id": 9,
+        "title": "Cough and Flu",
+        "img": "https://i.ibb.co/kxjcb50/Sneezing-pana.png"
+    },
+    {
+        "id": 10,
+        "title": "Ulcer",
+        "img": "https://i.ibb.co/jZzZ2Z7/ulcer.png"
+    },
+    {
+        "id": 11,
+        "title": "Constipation",
+        "img": "https://i.ibb.co/hZpSpJV/contipation.jpg"
+    },
+    {
+        "id": 12,
+        "title": "Dermatitis",
+        "img": "https://i.ibb.co/JRDvf42/dermatitis.jpg"
+    },
+    {
+        "id": 13,
+        "title": "Oral Fungal Infection",
+        "img": "https://i.ibb.co/Y3VTjXX/oralfun.png"
+    },
+    {
+        "id": 14,
+        "title": "Cavity",
+        "img": "https://i.ibb.co/wz9LJ2Z/cavity.png"
+    },
+    {
+        "id": 15,
+        "title": "Gynecological",
+        "img": "https://i.ibb.co/7ySsDRj/Gynecology-consultation-bro.png"
+    },
+    {
+        "id": 16,
+        "title": "Headache",
+        "img": "https://i.ibb.co/0fZFtNF/Anxiety-pana.png"
+    },
+    {
+        "id": 17,
+        "title": "Pregnancy",
+        "img": "https://i.ibb.co/cXF8wSx/pregnency.jpg"
+    },
+    {
+        "id": 18,
+        "title": "Abdominal pain",
+        "img": "https://i.ibb.co/0YG8K2j/Stomachache-bro.png"
+    },
+    {
+        "id": 19,
+        "title": "Covid-19",
+        "img": "https://i.ibb.co/QkMt1jC/Prevent-epidemic-rebound-pana.png"
+    }
+]
