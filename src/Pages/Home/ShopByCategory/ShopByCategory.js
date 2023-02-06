@@ -11,10 +11,11 @@ import image9 from '../../../assets/Categories/surgical.jpg';
 import image10 from '../../../assets/Categories/DentalCare.jpeg';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { Link } from 'react-router-dom';
 
 const ShopByCategory = () => {
     useEffect(() => {
-        AOS.init({ duration: 2000 });
+        AOS.init({ duration: 1500 });
     }, [])
 
     const categories = [
@@ -75,12 +76,14 @@ const ShopByCategory = () => {
             <h3 className='text-4xl font-bold text-center mb-3'>Shop By Category</h3>
             <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-8 text-center py-8 px-12 sm:px-0 cursor-pointer">
                 {categories.map(({ id, img, title, }) => (
-                    <div
-                        key={id}
-                        className={`shadow-md hover:scale-105 duration-500 h py-2 rounded-lg shadow-primary`} data-aos='zoom-in'>
-                        <img src={img} alt="" className="w-40 h-36 mx-auto rounded-lg" />
-                        <p className="text-lg mt-4">{title}</p>
-                    </div>
+                    <Link to={``}>
+                        <div
+                            key={id}
+                            className={`shadow-md hover:scale-105 duration-500 h py-2 rounded-lg shadow-primary`} data-aos='zoom-in'>
+                            <img src={img} alt="" className="w-40 h-36 mx-auto rounded-lg" />
+                            <p className="text-lg mt-4">{title}</p>
+                        </div>
+                    </Link>
                 ))}
             </div>
         </div>

@@ -4,6 +4,7 @@ import AboutUs from "../Pages/AboutUs/AboutUs";
 import ContactUs from "../Pages/ContactUs/ContactUs";
 import Home from "../Pages/Home/Home";
 import OtcDrugs from "../Pages/OtcDrugs/OtcDrugs";
+import ProductDetails from "../Pages/ProductDetails/ProductDetails";
 
 const router = createBrowserRouter([
     {
@@ -36,6 +37,11 @@ const router = createBrowserRouter([
             },
             {
                 path: '/prescription-medicines',
+
+            },
+            {
+                path: '/product-details',
+                element: <ProductDetails></ProductDetails>
 
             },
         ]
