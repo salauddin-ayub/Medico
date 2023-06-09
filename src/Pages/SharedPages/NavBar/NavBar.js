@@ -1,12 +1,66 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import logo from "../../../assets/logo.png"
 import { FaSearch, FaCartPlus } from "react-icons/fa"
 import { RiArrowDownSLine } from "react-icons/ri"
 import PrimaryButton from "../../../Components/PrimaryButton/PrimaryButton"
 import { useCart } from "react-use-cart"
+import axios from "axios"
+// import ReactModal from "react-modal"
+import { Dialog } from "primereact/dialog"
 
 const NavBar = () => {
+  const [loading, setLoading] = useState(false)
+  const [products, setProducts] = useState([])
+
+  //Search related states
+  const [searchTerm, setSearchTerm] = useState("")
+  const [showResults, setShowResults] = useState(false)
+  const [searchResults, setSearchResults] = useState([])
+  console.log("Search---->Result", searchResults)
+
+  //fETCH Products
+  const ProductData = async (value) => {
+    try {
+      setLoading(true)
+      await axios
+        .get(`http://localhost:5000/medisin`)
+        .then(function (res) {
+          setLoading(false)
+          setProducts(res?.data)
+
+          console.log(res?.data)
+        })
+        .catch(function (error) {
+          setLoading(false)
+        })
+    } catch (err) {
+      setLoading(false)
+    }
+  }
+
+  const handleSearch = () => {
+    // Filter the products array based on the search term
+    const filteredResults = products.filter((product) =>
+      product.productName.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+    setSearchResults(filteredResults)
+    setShowResults(true)
+  }
+  useEffect(() => {
+    ProductData()
+  }, [])
+
+  const handleChange = (event) => {
+    setSearchTerm(event.target.value)
+  }
+  const closeModal = () => {
+    setShowResults(false)
+  }
+  const onHide = (name) => {
+    setShowResults(false)
+  }
   const {
     isEmpty,
     totalUniqueItems,
@@ -125,12 +179,18 @@ const NavBar = () => {
               type="text"
               placeholder="Search Medicine"
               className="input input-bordered w-full"
+              value={searchTerm}
+              onChange={handleChange}
             />
-            <button className="btn btn-primary absolute top-0 right-0 rounded-l-none">
+            <button
+              className="btn btn-primary absolute top-0 right-0 rounded-l-none"
+              onClick={handleSearch}
+            >
               <FaSearch />
             </button>
           </div>
         </div>
+
         <div className="navbar-end">
           <div className="flex-none">
             <div className="dropdown dropdown-end">
@@ -238,6 +298,68 @@ const NavBar = () => {
           </ul>
         </div>
         <ul className="menu menu-horizontal px-6 top">{navbar}</ul>
+      </div>
+      <div>
+        {/* Result Modal */}
+        {/* <ReactModal isOpen={showResults} onRequestClose={closeModal}>
+          <h2>Search Results</h2>
+          {searchResults.length > 0 ? (
+            <ul>
+              {searchResults.map((product) => (
+                <li key={product._id}>{product.productName}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>No results found.</p>
+          )}
+          <button onClick={closeModal}>Close</button>
+        </ReactModal> */}
+        <Dialog
+          className="text-l"
+          blockScroll
+          header="Search Result"
+          visible={showResults}
+          style={{ width: "60vw" }}
+          onHide={() => onHide("displayBasic")}
+          id="fname"
+          maximizable
+        >
+          {searchResults.length > 0 ? (
+            <ul>
+              {searchResults.map((product) => (
+                <div className="max-w-xs rounded overflow-hidden shadow-lg">
+                  <img
+                    className="w-full"
+                    src="your-product-image.jpg"
+                    alt="Product"
+                  />
+                  <div className="px-6 py-4">
+                    <div className="font-bold text-xl mb-2">
+                      {product?.productName}
+                    </div>
+                    <p className="text-gray-700 text-base">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Aenean euismod bibendum laoreet.
+                    </p>
+                  </div>
+                  <div className="px-6 py-4">
+                    <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
+                      Small
+                    </span>
+                    <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
+                      Medium
+                    </span>
+                    <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+                      Large
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </ul>
+          ) : (
+            <p>No results found.</p>
+          )}
+        </Dialog>
       </div>
     </div>
   )
