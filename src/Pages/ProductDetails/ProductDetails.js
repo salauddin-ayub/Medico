@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react"
+import { useSelector, useDispatch } from "react-redux"
+// import { addToCart, incrementCount } from "../../Components/Actions/actions";
 import image1 from "../../assets/medicines/prescription/Monas 10.jpg"
 import { TbCurrencyTaka, TbMinus, TbPlus } from "react-icons/tb"
 import PrimaryButton from "../../Components/PrimaryButton/PrimaryButton"
 import { FaCartPlus } from "react-icons/fa"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
+import { addToCart, incrementCount } from "../../Components/Actions/Action"
 
 const ProductDetails = () => {
   const { id } = useParams()
@@ -12,32 +15,8 @@ const ProductDetails = () => {
   const [products, setProducts] = useState([])
   const [quantity, setQuantity] = useState(1)
   const [selectedOption, setSelectedOption] = useState("piece")
-  const [cartItem, setCartItem] = useState({ product: null, quantity: 0 })
-  const [cart, setCart] = useState([])
+  const dispatch = useDispatch()
   const navigate = useNavigate()
-
-  // function addToCart() {
-  //   console.log("Hit the function")
-  //   if (selectedOption && quantity) {
-  //     const newItem = {
-  //       product: { ...product, selectedOption },
-  //       quantity: quantity,
-  //     }
-  //     setCart([...cart, newItem])
-  //     navigate(`/view-product/${product._id}`)
-  //   }
-  // }
-  const addToCart = () => {
-    console.log("Hit the function")
-    if (selectedOption && quantity) {
-      const newItem = {
-        product: { ...product, selectedOption },
-        quantity: quantity,
-      }
-      setCart([...cart, newItem])
-      navigate(`/view-product/${product._id}`)
-    }
-  }
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value === selectedOption ? "" : e.target.value)
@@ -53,19 +32,6 @@ const ProductDetails = () => {
     setQuantity(quantity + 1)
   }
 
-  console.log("ID-------->", id)
-
-  //   const medicine = [
-  //     {
-  //       id: 1,
-  //       title: "Monas 10",
-  //       type: "Tablet",
-  //       img: image1,
-  //       generics: "Montelukast Sodium 10mg",
-  //       company: "The ACME Laboratories Ltd.",
-  //       price: 15,
-  //     },
-  //   ]
   const ProductData = async (value) => {
     try {
       setLoading(true)
@@ -95,6 +61,15 @@ const ProductDetails = () => {
   const productId = id
   const product = getProductById(productId)
 
+  const handleAddToCart = () => {
+    const productWithQuantity = {
+      ...product,
+      quantity: quantity,
+    }
+    dispatch(addToCart(productWithQuantity)) // Dispatch addToCart action
+    dispatch(incrementCount()) // Dispatch incrementCount action
+  }
+
   return (
     <div>
       {/* {products.map(({ id, img, title, type, price, generics, company }) => ( */}
@@ -123,51 +98,8 @@ const ProductDetails = () => {
             <div className="mt-3">
               <p className="text-xl font-semibold mb-3">Quantity:</p>
               <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="quantity"
-                    value=""
-                    checked={selectedOption === ""}
-                    onChange={handleOptionChange}
-                    className="radio radio-primary"
-                  />
-                  <p className="text-lg ml-3">None</p>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="quantity"
-                    value="1"
-                    checked={selectedOption === "1"}
-                    onChange={handleOptionChange}
-                    className="radio radio-primary"
-                  />
-                  <p className="text-lg ml-3">1 Piece</p>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="quantity"
-                    value="1_strip"
-                    checked={selectedOption === "1_strip"}
-                    onChange={handleOptionChange}
-                    className="radio radio-primary"
-                  />
-                  <p className="text-lg ml-3">1 Strip</p>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="quantity"
-                    value="1_box"
-                    checked={selectedOption === "1_box"}
-                    onChange={handleOptionChange}
-                    className="radio radio-primary"
-                  />
-                  <p className="text-lg ml-3">1 Box</p>
-                </div>
-
+                {/* Quantity options */}
+                {/* ...existing code... */}
                 <div className="flex items-center">
                   <button
                     className="btn btn-accent btn-sm p-1"
@@ -188,7 +120,7 @@ const ProductDetails = () => {
               </div>
               <PrimaryButton
                 classes={`w-4/6 h-12 btn-sm normal-case hover:scale-105 duration-500`}
-                onClick={addToCart}
+                onClick={handleAddToCart} // Add onClick event to call handleAddToCart
               >
                 <span>
                   <FaCartPlus size={25} />

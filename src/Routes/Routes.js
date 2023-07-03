@@ -8,8 +8,20 @@ import AddMedicine from "../Pages/Medicine/AddMedicine"
 import OtcDrugs from "../Pages/OtcDrugs/OtcDrugs"
 import ProductDetails from "../Pages/ProductDetails/ProductDetails"
 import ViewAddToCartProduct from "../Pages/ProductDetails/ViewAddToCartProduct"
+import DiseasePrediction from "../Pages/Medicine/DiseasePrediction"
+import Login from "../Pages/Authentication/Login"
+import Registration from "../Pages/Authentication/Registration"
+import PlaceOrder from "../Pages/Order/PlaceOrder"
 
 const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <Login></Login>,
+  },
+  {
+    path: "/register",
+    element: <Registration></Registration>,
+  },
   {
     path: "/",
     element: <Main></Main>,
@@ -19,12 +31,21 @@ const router = createBrowserRouter([
         element: <Home></Home>,
       },
       {
+        path: "/place-order",
+        element: <PlaceOrder></PlaceOrder>,
+      },
+
+      {
         path: "/otc-drugs",
         element: <OtcDrugs></OtcDrugs>,
       },
       {
         path: "/add-medicine",
         element: <AddMedicine></AddMedicine>,
+      },
+      {
+        path: "/disease-prediction",
+        element: <DiseasePrediction></DiseasePrediction>,
       },
       {
         path: "/review",

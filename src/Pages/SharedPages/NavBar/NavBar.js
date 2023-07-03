@@ -6,17 +6,29 @@ import { RiArrowDownSLine } from "react-icons/ri"
 import PrimaryButton from "../../../Components/PrimaryButton/PrimaryButton"
 import { useCart } from "react-use-cart"
 import axios from "axios"
-// import ReactModal from "react-modal"
+import ReactModal from "react-modal"
+import { useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
 import { Dialog } from "primereact/dialog"
+import PlaceOrder from "../../Order/PlaceOrder"
 
 const NavBar = () => {
   const [loading, setLoading] = useState(false)
   const [products, setProducts] = useState([])
+  const navigate = useNavigate()
+  const [showModal, setShowModal] = useState(false)
+
+  const cartItems = useSelector((state) => state.cartItems)
+  const totalCount = cartItems.length
+
+  console.log("Cart Items", cartItems)
 
   //Search related states
   const [searchTerm, setSearchTerm] = useState("")
   const [showResults, setShowResults] = useState(false)
   const [searchResults, setSearchResults] = useState([])
+  const [items, setItems] = useState([])
+
   console.log("Search---->Result", searchResults)
 
   //fETCH Products
@@ -58,20 +70,62 @@ const NavBar = () => {
   const closeModal = () => {
     setShowResults(false)
   }
-  const onHide = (name) => {
-    setShowResults(false)
+
+  const groupedItems = cartItems.reduce((acc, item) => {
+    const existingItem = acc.find(
+      (groupedItem) => groupedItem.productName === item.productName
+    )
+    if (existingItem) {
+      existingItem.quantity += item.quantity
+    } else {
+      acc.push({ ...item })
+    }
+    return acc
+  }, [])
+
+  // Calculate the total price sum
+  const totalPriceSum = groupedItems.reduce(
+    (sum, item) => sum + Number(item.price) * item.quantity,
+    0
+  )
+  const storedId = localStorage.getItem("id")
+
+  const handlePlaceOrder = () => {
+    if (!storedId) {
+      navigate("/login")
+      setShowModal(false)
+    } else {
+      setShowModal(true)
+      setItems(groupedItems)
+    }
+
+    // // Create an array to store the order items
+    // const orderItems = groupedItems.map((item) => ({
+    //   id: item._id,
+    //   productName: item.productName,
+    //   quantity: item.quantity,
+    //   price: Number(item.price),
+    // }))
+
+    // // Send the order data via POST request using axios
+    // axios
+    //   .post("http://localhost:5000/order", orderItems)
+    //   .then((response) => {
+    //     if (response.status === 200) {
+    //       // Handle the successful response
+    //       alert("Order placed successfully!")
+    //     } else {
+    //       // Handle other response status codes
+    //       alert("Error placing the order. Please try again.")
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     // Handle any errors that occur during the request
+    //     console.error("Error placing the order:", error)
+    //     alert("Error placing the order. Please try again.")
+    //   })
   }
-  const {
-    isEmpty,
-    totalUniqueItems,
-    items,
-    product,
-    totalItems,
-    cartTotal,
-    updateItemQuantity,
-    removeItem,
-    emptyCart,
-  } = useCart()
+
   const navbar = (
     <>
       <li className="font-semibold text-base">
@@ -163,6 +217,10 @@ const NavBar = () => {
       </li>
     </>
   )
+  const onHide = () => {
+    setShowResults(false)
+    setShowModal(false)
+  }
 
   return (
     <div className="sticky top-0 z-30 w-full bg-white">
@@ -196,24 +254,39 @@ const NavBar = () => {
             <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost btn-circle">
                 <div className="indicator">
-                  <p>{totalItems}</p>
+                  <p>{totalCount}</p>
                   <FaCartPlus className="text-2xl" />
 
                   <span className="badge badge-sm indicator-item"></span>
                 </div>
               </label>
-              <div
-                tabIndex={0}
-                className="mt-3 card card-compact dropdown-content w-52 bg-base-100 shadow"
-              >
-                <div className="card-body">
-                  <span className="font-bold text-lg">0 Items</span>
-                  <span className="text-info">Subtotal: $000</span>
-                  <div className="card-actions">
-                    <button className="btn btn-primary btn-block">
-                      View cart
-                    </button>
+              <div className="mt-3 card card-compact dropdown-content w-80 bg-base-100 shadow">
+                {groupedItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between p-2 border-b border-base-300"
+                  >
+                    <div>
+                      <p className="text-lg font-medium">{item.productName}</p>
+                      <p className="text-sm text-base-content-opacity">
+                        Quantity: {item.quantity}
+                      </p>
+                    </div>
+                    <p className="text-lg font-medium">
+                      Price: ${Number(item.price) * item.quantity}
+                    </p>
                   </div>
+                ))}
+                <div className="flex justify-between p-2 bg-base-200">
+                  <p className="text-lg font-medium">
+                    Total Price Sum: ${totalPriceSum}
+                  </p>
+                  <button
+                    className="px-4 py-2 text-white bg-primary hover:bg-primary-hover focus:outline-none rounded-md transition-colors duration-300"
+                    onClick={handlePlaceOrder}
+                  >
+                    Place Order
+                  </button>
                 </div>
               </div>
             </div>
@@ -301,64 +374,82 @@ const NavBar = () => {
       </div>
       <div>
         {/* Result Modal */}
-        {/* <ReactModal isOpen={showResults} onRequestClose={closeModal}>
-          <h2>Search Results</h2>
-          {searchResults.length > 0 ? (
-            <ul>
-              {searchResults.map((product) => (
-                <li key={product._id}>{product.productName}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No results found.</p>
-          )}
-          <button onClick={closeModal}>Close</button>
-        </ReactModal> */}
         <Dialog
           className="text-l"
           blockScroll
-          header="Search Result"
+          header="Predicted Medicine"
           visible={showResults}
-          style={{ width: "60vw" }}
+          style={{ width: "80vw" }}
           onHide={() => onHide("displayBasic")}
           id="fname"
           maximizable
         >
-          {searchResults.length > 0 ? (
-            <ul>
-              {searchResults.map((product) => (
-                <div className="max-w-xs rounded overflow-hidden shadow-lg">
-                  <img
-                    className="w-full"
-                    src="your-product-image.jpg"
-                    alt="Product"
-                  />
-                  <div className="px-6 py-4">
-                    <div className="font-bold text-xl mb-2">
-                      {product?.productName}
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Search Results</h2>
+            {searchResults.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {searchResults.map((product) => (
+                  <div
+                    key={product?.id}
+                    className="max-w-sm bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  >
+                    <img
+                      className="w-full h-40 object-cover"
+                      src={product?.image}
+                      alt="Product"
+                    />
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold text-blue-800 mb-2">
+                        {product?.productName}
+                      </h3>
+                      <p className="text-gray-700 text-sm mb-2">
+                        Category: {product?.category}
+                      </p>
+                      <p className="text-gray-700 text-sm mb-2">
+                        Product Type: {product?.productType}
+                      </p>
+                      <p className="text-gray-700 text-sm mb-4">
+                        Price: BDT {product?.price}
+                      </p>
+                      <div className="text-center">
+                        <Link to={`/product-details/${product?._id}`}>
+                          <button
+                            className="inline-flex items-center px-4 py-2 text-white bg-primary hover:bg-primary-hover rounded-md transition-colors duration-300"
+                            style={{ fontSize: "14px" }}
+                          >
+                            <span className="mr-2">
+                              <FaCartPlus size={19} />
+                            </span>
+                            <span className="font-medium">Add to Cart</span>
+                          </button>
+                        </Link>
+                      </div>
                     </div>
-                    <p className="text-gray-700 text-base">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Aenean euismod bibendum laoreet.
-                    </p>
                   </div>
-                  <div className="px-6 py-4">
-                    <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
-                      Small
-                    </span>
-                    <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
-                      Medium
-                    </span>
-                    <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
-                      Large
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </ul>
-          ) : (
-            <p>No results found.</p>
-          )}
+                ))}
+              </div>
+            ) : (
+              <p className="text-lg font-semibold">No results found.</p>
+            )}
+            <button
+              className="mt-4 px-4 py-2 text-white bg-primary hover:bg-primary-hover rounded-md transition-colors duration-300"
+              onClick={closeModal}
+            >
+              Close
+            </button>
+          </div>
+        </Dialog>
+        <Dialog
+          className="text-l"
+          blockScroll
+          header="Place order"
+          visible={showModal}
+          style={{ width: "80vw" }}
+          onHide={() => onHide("displayBasic")}
+          id="fname"
+          maximizable
+        >
+          <PlaceOrder items={items}></PlaceOrder>
         </Dialog>
       </div>
     </div>
