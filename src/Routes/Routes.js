@@ -12,6 +12,7 @@ import DiseasePrediction from "../Pages/Medicine/DiseasePrediction"
 import Login from "../Pages/Authentication/Login"
 import Registration from "../Pages/Authentication/Registration"
 import PlaceOrder from "../Pages/Order/PlaceOrder"
+import OrderDashboard from "../Pages/Order/OrderDashboard"
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: "/place-order",
         element: <PlaceOrder></PlaceOrder>,
+      },
+      {
+        path: "/order-dashboard",
+        element: <OrderDashboard></OrderDashboard>,
       },
 
       {

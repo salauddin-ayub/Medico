@@ -1,8 +1,63 @@
+import axios from "axios"
+import { useFormik } from "formik"
 import React, { useState } from "react"
 import { useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
 
-const PlaceOrder = ({ items }) => {
+const PlaceOrder = ({ items, onHide }) => {
   const cartItems = useSelector((state) => state.cartItems)
+  const navigate = useNavigate()
+  const firstName = localStorage.getItem("firstName")
+  const userID = localStorage.getItem("id")
+  const { v4: uuidv4 } = require("uuid")
+
+  const formik = useFormik({
+    initialValues: {
+      contactNumber: "",
+      address: "",
+    },
+    onSubmit: async (values) => {
+      const orderItems = groupedItems.map((item) => ({
+        ...item,
+        ...values,
+        firstName: firstName,
+        userID: userID,
+        _id: uuidv4(),
+      }))
+
+      try {
+        // Example: Submit the form data to an API
+        const response = await axios.post(
+          "http://localhost:5000/order",
+          orderItems
+        )
+        console.log("Order placed successfully!", response.data)
+
+        // Clear the form inputs after successful submission
+        formik.resetForm()
+        onHide()
+
+        // Navigate to a different page after successful submission
+        navigate("/order-dashboard")
+      } catch (error) {
+        console.error("Failed to place order!", error)
+      }
+    },
+    validate: (values) => {
+      const errors = {}
+
+      if (!values.contactNumber) {
+        errors.contactNumber = "Contact number is required"
+      }
+
+      if (!values.address) {
+        errors.address = "Address is required"
+      }
+
+      return errors
+    },
+  })
+
   console.log("Item from previous page", items)
   const groupedItems = cartItems.reduce((acc, item) => {
     const existingItem = acc.find(
@@ -21,25 +76,18 @@ const PlaceOrder = ({ items }) => {
     0
   )
 
-  const [contactNumber, setContactNumber] = useState("")
-  const [address, setAddress] = useState("")
-
   const handleContactNumberChange = (e) => {
-    setContactNumber(e.target.value)
+    formik.setFieldValue("contactNumber", e.target.value)
   }
 
   const handleAddressChange = (e) => {
-    setAddress(e.target.value)
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Perform submission logic here
+    formik.setFieldValue("address", e.target.value)
   }
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="mb-4">
+      <form onSubmit={formik.handleSubmit} className="mb-4">
+        {/* Contact Number Field */}
         <div className="mb-4">
           <label htmlFor="contactNumber" className="block mb-1 font-semibold">
             Contact Number:
@@ -49,10 +97,15 @@ const PlaceOrder = ({ items }) => {
             id="contactNumber"
             className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:border-primary"
             placeholder="Enter contact number"
-            value={contactNumber}
+            value={formik.values.contactNumber}
             onChange={handleContactNumberChange}
           />
+          {formik.touched.contactNumber && formik.errors.contactNumber && (
+            <div className="text-red-500">{formik.errors.contactNumber}</div>
+          )}
         </div>
+
+        {/* Address Field */}
         <div className="mb-4">
           <label htmlFor="address" className="block mb-1 font-semibold">
             Address:
@@ -62,9 +115,12 @@ const PlaceOrder = ({ items }) => {
             className="p-2 border border-gray-300 rounded-md w-full resize-none focus:outline-none focus:border-primary"
             rows={4}
             placeholder="Enter address"
-            value={address}
+            value={formik.values.address}
             onChange={handleAddressChange}
           ></textarea>
+          {formik.touched.address && formik.errors.address && (
+            <div className="text-red-500">{formik.errors.address}</div>
+          )}
         </div>
 
         <div className="overflow-x-auto">

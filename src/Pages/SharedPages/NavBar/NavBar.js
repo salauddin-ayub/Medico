@@ -98,32 +98,6 @@ const NavBar = () => {
       setShowModal(true)
       setItems(groupedItems)
     }
-
-    // // Create an array to store the order items
-    // const orderItems = groupedItems.map((item) => ({
-    //   id: item._id,
-    //   productName: item.productName,
-    //   quantity: item.quantity,
-    //   price: Number(item.price),
-    // }))
-
-    // // Send the order data via POST request using axios
-    // axios
-    //   .post("http://localhost:5000/order", orderItems)
-    //   .then((response) => {
-    //     if (response.status === 200) {
-    //       // Handle the successful response
-    //       alert("Order placed successfully!")
-    //     } else {
-    //       // Handle other response status codes
-    //       alert("Error placing the order. Please try again.")
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     // Handle any errors that occur during the request
-    //     console.error("Error placing the order:", error)
-    //     alert("Error placing the order. Please try again.")
-    //   })
   }
 
   const navbar = (
@@ -449,7 +423,7 @@ const NavBar = () => {
           id="fname"
           maximizable
         >
-          <PlaceOrder items={items}></PlaceOrder>
+          <PlaceOrder items={items} onHide={onHide}></PlaceOrder>
         </Dialog>
       </div>
     </div>
