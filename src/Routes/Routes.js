@@ -13,6 +13,7 @@ import Login from "../Pages/Authentication/Login"
 import Registration from "../Pages/Authentication/Registration"
 import PlaceOrder from "../Pages/Order/PlaceOrder"
 import OrderDashboard from "../Pages/Order/OrderDashboard"
+import AssignRole from "../Pages/RoleAssign/AssignRole"
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home></Home>,
+      },
+      {
+        path: "/assign-role",
+        element: <AssignRole></AssignRole>,
       },
       {
         path: "/place-order",

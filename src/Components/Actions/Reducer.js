@@ -1,4 +1,4 @@
-import { ADD_TO_CART, INCREMENT_COUNT } from "./ActionTypes"
+import { ADD_TO_CART, INCREMENT_COUNT, CLEAR_CART } from "./ActionTypes"
 
 const initialState = {
   cartItems: [],
@@ -16,6 +16,12 @@ const cartReducer = (state = initialState, action) => {
       return {
         ...state,
         count: state.count + 1,
+      }
+    case CLEAR_CART:
+      return {
+        ...state,
+        cartItems: [],
+        count: 0,
       }
     default:
       return state

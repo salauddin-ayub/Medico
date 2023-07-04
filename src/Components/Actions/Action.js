@@ -1,4 +1,4 @@
-import { ADD_TO_CART, INCREMENT_COUNT } from "./ActionTypes"
+import { ADD_TO_CART, CLEAR_CART, INCREMENT_COUNT } from "./ActionTypes"
 
 export const addToCart = (product) => {
   return {
@@ -12,3 +12,7 @@ export const incrementCount = () => {
     type: INCREMENT_COUNT,
   }
 }
+export const clearCart = () => ({
+  type: CLEAR_CART,
+})
+

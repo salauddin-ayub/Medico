@@ -7,16 +7,19 @@ import PrimaryButton from "../../../Components/PrimaryButton/PrimaryButton"
 import { useCart } from "react-use-cart"
 import axios from "axios"
 import ReactModal from "react-modal"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { Dialog } from "primereact/dialog"
 import PlaceOrder from "../../Order/PlaceOrder"
+import { HiUserCircle } from "react-icons/hi"
+import { clearCart } from "../../../Components/Actions/Action"
 
 const NavBar = () => {
   const [loading, setLoading] = useState(false)
   const [products, setProducts] = useState([])
   const navigate = useNavigate()
   const [showModal, setShowModal] = useState(false)
+  const dispatch = useDispatch()
 
   const cartItems = useSelector((state) => state.cartItems)
   const totalCount = cartItems.length
@@ -109,13 +112,16 @@ const NavBar = () => {
         <Link to="/otc-drugs">OTC Drugs</Link>
       </li>
       <li className="font-semibold text-base">
-        <Link to="/order">Order</Link>
+        <Link to="/order-dashboard">Dashboard</Link>
       </li>
       <li className="font-semibold text-base">
         <Link to="/add-medicine">Add Medicine</Link>
       </li>
       <li className="font-semibold text-base">
         <Link to="/review">Review</Link>
+      </li>
+      <li className="font-semibold text-base">
+        <Link to="/assign-role">Assign Role</Link>
       </li>
       <li className="font-semibold text-base">
         <Link to="/about-us">About Us</Link>
@@ -195,6 +201,19 @@ const NavBar = () => {
     setShowResults(false)
     setShowModal(false)
   }
+  const userID = localStorage.getItem("id")
+  const firstName = localStorage.getItem("firstName")
+  const lastName = localStorage.getItem("lastName")
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5000/logout")
+      localStorage.clear() // Clear the entire localStorage
+      window.location.href = "/"
+    } catch (error) {
+      console.error("Error during logout:", error)
+    }
+  }
 
   return (
     <div className="sticky top-0 z-30 w-full bg-white">
@@ -224,7 +243,14 @@ const NavBar = () => {
         </div>
 
         <div className="navbar-end">
-          <div className="flex-none">
+          <div className="flex items-center text-lg text-gray-800">
+            <HiUserCircle className="mr-2 text-xl text-gray-500" />
+            <div>
+              {firstName} {lastName}
+            </div>
+          </div>
+
+          <div className="flex-none ml-2">
             <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost btn-circle">
                 <div className="indicator">
@@ -265,14 +291,29 @@ const NavBar = () => {
               </div>
             </div>
           </div>
-          <Link to="/login" className="ml-3">
-            <PrimaryButton classes={`btn-sm normal-case`}>Login</PrimaryButton>
-          </Link>
-          <Link to="/register" className="ml-3">
-            <PrimaryButton classes={`btn-sm normal-case`}>
-              Register
-            </PrimaryButton>
-          </Link>
+          {!userID ? (
+            <div>
+              <Link to="/login" className="ml-3">
+                <PrimaryButton classes={`btn-sm normal-case`}>
+                  Login
+                </PrimaryButton>
+              </Link>
+              <Link to="/register" className="ml-3">
+                <PrimaryButton classes={`btn-sm normal-case`}>
+                  Register
+                </PrimaryButton>
+              </Link>
+            </div>
+          ) : (
+            <div className="ml-3">
+              <PrimaryButton
+                classes={`btn-sm normal-case`}
+                onClick={handleLogout}
+              >
+                Logout
+              </PrimaryButton>
+            </div>
+          )}
         </div>
       </div>
       <div className="flex">
@@ -390,6 +431,7 @@ const NavBar = () => {
                           <button
                             className="inline-flex items-center px-4 py-2 text-white bg-primary hover:bg-primary-hover rounded-md transition-colors duration-300"
                             style={{ fontSize: "14px" }}
+                            onClick={(e) => setShowResults(false)}
                           >
                             <span className="mr-2">
                               <FaCartPlus size={19} />

@@ -1,8 +1,9 @@
 import axios from "axios"
 import { useFormik } from "formik"
 import React, { useState } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
+import { clearCart } from "../../Components/Actions/Action"
 
 const PlaceOrder = ({ items, onHide }) => {
   const cartItems = useSelector((state) => state.cartItems)
@@ -10,6 +11,24 @@ const PlaceOrder = ({ items, onHide }) => {
   const firstName = localStorage.getItem("firstName")
   const userID = localStorage.getItem("id")
   const { v4: uuidv4 } = require("uuid")
+  const dispatch = useDispatch()
+
+  const groupedItems = cartItems.reduce((acc, item) => {
+    const existingItem = acc.find(
+      (groupedItem) => groupedItem.productName === item.productName
+    )
+    if (existingItem) {
+      existingItem.quantity += item.quantity
+    } else {
+      acc.push({ ...item })
+    }
+    return acc
+  }, [])
+  console.log("groupedItems", groupedItems)
+  const totalPriceSum = groupedItems.reduce(
+    (sum, item) => sum + Number(item.price) * item.quantity,
+    0
+  )
 
   const formik = useFormik({
     initialValues: {
@@ -23,6 +42,8 @@ const PlaceOrder = ({ items, onHide }) => {
         firstName: firstName,
         userID: userID,
         _id: uuidv4(),
+        productID: item._id,
+        price: Number(item.price) * item.quantity,
       }))
 
       try {
@@ -36,6 +57,7 @@ const PlaceOrder = ({ items, onHide }) => {
         // Clear the form inputs after successful submission
         formik.resetForm()
         onHide()
+        dispatch(clearCart())
 
         // Navigate to a different page after successful submission
         navigate("/order-dashboard")
@@ -59,22 +81,6 @@ const PlaceOrder = ({ items, onHide }) => {
   })
 
   console.log("Item from previous page", items)
-  const groupedItems = cartItems.reduce((acc, item) => {
-    const existingItem = acc.find(
-      (groupedItem) => groupedItem.productName === item.productName
-    )
-    if (existingItem) {
-      existingItem.quantity += item.quantity
-    } else {
-      acc.push({ ...item })
-    }
-    return acc
-  }, [])
-  console.log("groupedItems", groupedItems)
-  const totalPriceSum = groupedItems.reduce(
-    (sum, item) => sum + Number(item.price) * item.quantity,
-    0
-  )
 
   const handleContactNumberChange = (e) => {
     formik.setFieldValue("contactNumber", e.target.value)
