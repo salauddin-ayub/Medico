@@ -1,19 +1,19 @@
-import { createBrowserRouter } from "react-router-dom"
-import AddToCard from "../Components/Card/AddToCard"
-import Main from "../Layout/Main"
-import AboutUs from "../Pages/AboutUs/AboutUs"
-import ContactUs from "../Pages/ContactUs/ContactUs"
-import Home from "../Pages/Home/Home"
-import AddMedicine from "../Pages/Medicine/AddMedicine"
-import OtcDrugs from "../Pages/OtcDrugs/OtcDrugs"
-import ProductDetails from "../Pages/ProductDetails/ProductDetails"
-import ViewAddToCartProduct from "../Pages/ProductDetails/ViewAddToCartProduct"
-import DiseasePrediction from "../Pages/Medicine/DiseasePrediction"
-import Login from "../Pages/Authentication/Login"
-import Registration from "../Pages/Authentication/Registration"
-import PlaceOrder from "../Pages/Order/PlaceOrder"
-import OrderDashboard from "../Pages/Order/OrderDashboard"
-import AssignRole from "../Pages/RoleAssign/AssignRole"
+import { createBrowserRouter } from "react-router-dom";
+import AddToCard from "../Components/Card/AddToCard";
+import Main from "../Layout/Main";
+import AboutUs from "../Pages/AboutUs/AboutUs";
+import ContactUs from "../Pages/ContactUs/ContactUs";
+import Home from "../Pages/Home/Home";
+import AddMedicine from "../Pages/Medicine/AddMedicine";
+import OtcDrugs from "../Pages/OtcDrugs/OtcDrugs";
+import ProductDetails from "../Pages/ProductDetails/ProductDetails";
+import ViewAddToCartProduct from "../Pages/ProductDetails/ViewAddToCartProduct";
+import DiseasePrediction from "../Pages/Medicine/DiseasePrediction";
+import Login from "../Pages/Authentication/Login";
+import Registration from "../Pages/Authentication/Registration";
+import PlaceOrder from "../Pages/Order/PlaceOrder";
+import OrderDashboard from "../Pages/Order/OrderDashboard";
+import AssignRole from "../Pages/RoleAssign/AssignRole";
 
 const router = createBrowserRouter([
   {
@@ -58,7 +58,8 @@ const router = createBrowserRouter([
         element: <DiseasePrediction></DiseasePrediction>,
       },
       {
-        path: "/review",
+        path: "/prediction",
+        element: <DiseasePrediction></DiseasePrediction>,
       },
       {
         path: "/order",
@@ -88,6 +89,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-])
+]);
 
-export default router
+export default router;

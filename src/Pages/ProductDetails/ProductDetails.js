@@ -1,74 +1,75 @@
-import React, { useEffect, useState } from "react"
-import { useSelector, useDispatch } from "react-redux"
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 // import { addToCart, incrementCount } from "../../Components/Actions/actions";
-import image1 from "../../assets/medicines/prescription/Monas 10.jpg"
-import { TbCurrencyTaka, TbMinus, TbPlus } from "react-icons/tb"
-import PrimaryButton from "../../Components/PrimaryButton/PrimaryButton"
-import { FaCartPlus } from "react-icons/fa"
-import { useParams, useNavigate } from "react-router-dom"
-import axios from "axios"
-import { addToCart, incrementCount } from "../../Components/Actions/Action"
+import image1 from "../../assets/medicines/prescription/Monas 10.jpg";
+import { TbCurrencyTaka, TbMinus, TbPlus } from "react-icons/tb";
+import PrimaryButton from "../../Components/PrimaryButton/PrimaryButton";
+import { FaCartPlus } from "react-icons/fa";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { addToCart, incrementCount } from "../../Components/Actions/Action";
 
 const ProductDetails = () => {
-  const { id } = useParams()
-  const [loading, setLoading] = useState(false)
-  const [products, setProducts] = useState([])
-  const [quantity, setQuantity] = useState(1)
-  const [selectedOption, setSelectedOption] = useState("piece")
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const { id } = useParams();
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedOption, setSelectedOption] = useState("piece");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleOptionChange = (e) => {
-    setSelectedOption(e.target.value === selectedOption ? "" : e.target.value)
-  }
+    setSelectedOption(e.target.value === selectedOption ? "" : e.target.value);
+  };
 
   const handleDecrease = () => {
     if (quantity > 1) {
-      setQuantity(quantity - 1)
+      setQuantity(quantity - 1);
     }
-  }
+  };
 
   const handleIncrease = () => {
-    setQuantity(quantity + 1)
-  }
+    setQuantity(quantity + 1);
+  };
 
   const ProductData = async (value) => {
     try {
-      setLoading(true)
+      setLoading(true);
       await axios
         .get(`http://localhost:5000/medisin`)
         .then(function (res) {
-          setLoading(false)
-          setProducts(res?.data)
+          setLoading(false);
+          setProducts(res?.data);
 
-          console.log(res?.data)
+          console.log(res?.data);
         })
         .catch(function (error) {
-          setLoading(false)
-        })
+          setLoading(false);
+        });
     } catch (err) {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
   useEffect(() => {
-    ProductData()
-  }, [])
+    ProductData();
+  }, []);
 
   function getProductById(id) {
-    return products.find((product) => product._id === id)
+    return products.find((product) => product._id === id);
   }
 
-  const productId = id
-  const product = getProductById(productId)
+  const productId = id;
+  const product = getProductById(productId);
 
   const handleAddToCart = () => {
     const productWithQuantity = {
       ...product,
       quantity: quantity,
-    }
-    dispatch(addToCart(productWithQuantity)) // Dispatch addToCart action
-    dispatch(incrementCount()) // Dispatch incrementCount action
-  }
+    };
+    dispatch(addToCart(productWithQuantity)); // Dispatch addToCart action
+    dispatch(incrementCount()); // Dispatch incrementCount action
+  };
+  console.log("product", product);
 
   return (
     <div>
@@ -133,7 +134,7 @@ const ProductDetails = () => {
       </div>
       {/* ))} */}
     </div>
-  )
-}
+  );
+};
 
-export default ProductDetails
+export default ProductDetails;

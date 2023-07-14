@@ -1,92 +1,92 @@
-import React, { useEffect, useState } from "react"
-import axios from "axios"
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const OrderDashboard = () => {
-  const [orders, setOrders] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(10)
-  const role = localStorage.getItem("role")
-  const firstName = localStorage.getItem("firstName")
+  const [orders, setOrders] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const role = localStorage.getItem("role");
+  const firstName = localStorage.getItem("firstName");
   const fetchOrders = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/orders")
+      const response = await axios.get("http://localhost:5000/orders");
       if (role === "superAdmin") {
-        setOrders(response.data)
+        setOrders(response.data);
       } else {
         const filteredOrders = response.data.filter(
           (order) => order.firstName === firstName
-        )
-        setOrders(filteredOrders)
+        );
+        setOrders(filteredOrders);
       }
     } catch (error) {
-      console.error("Error fetching orders:", error)
+      console.error("Error fetching orders:", error);
     }
-  }
+  };
   useEffect(() => {
-    fetchOrders()
-  }, [])
+    fetchOrders();
+  }, []);
 
-  const totalItems = orders.length
-  const totalPages = Math.ceil(totalItems / itemsPerPage)
+  const totalItems = orders.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = orders.slice(indexOfFirstItem, indexOfLastItem)
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = orders.slice(indexOfFirstItem, indexOfLastItem);
 
   const paginate = (pageNumber) => {
-    setCurrentPage(pageNumber)
-  }
+    setCurrentPage(pageNumber);
+  };
 
   const goToPreviousPage = () => {
     if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1)
+      setCurrentPage((prevPage) => prevPage - 1);
     }
-  }
+  };
 
   const goToNextPage = () => {
     if (currentPage < totalPages) {
-      setCurrentPage((prevPage) => prevPage + 1)
+      setCurrentPage((prevPage) => prevPage + 1);
     }
-  }
+  };
 
-  const ActionOptions = ["Approved", "Rejected"]
-  const [selectedAction, setSelectedAction] = useState({})
+  const ActionOptions = ["Approved", "Rejected"];
+  const [selectedAction, setSelectedAction] = useState({});
   const handleActionSelect = (orderId, action) => {
     setSelectedAction((prevState) => ({
       ...prevState,
       [orderId]: action,
-    }))
-  }
+    }));
+  };
 
   const executeAction = async (orderId) => {
-    const selected = selectedAction[orderId]
+    const selected = selectedAction[orderId];
     if (selected) {
       try {
         const response = await axios.put("http://localhost:5000/order", {
           _id: orderId,
           status: selected,
-        })
+        });
         console.log(
           `Successfully executed action '${selected}' for order ${orderId}`
-        )
-        console.log("Updated order:", response.data)
-        fetchOrders()
+        );
+        console.log("Updated order:", response.data);
+        fetchOrders();
       } catch (error) {
-        console.error(`Error executing action for order ${orderId}:`, error)
+        console.error(`Error executing action for order ${orderId}:`, error);
       }
     } else {
-      console.log("No action selected")
+      console.log("No action selected");
     }
-  }
+  };
   const getRowClassName = (status) => {
     if (status === "Approved") {
-      return "bg-green-200"
+      return "bg-green-200";
     } else if (status === "Rejected") {
-      return "bg-red-300"
+      return "bg-red-300";
     } else {
-      return "bg-yellow-100"
+      return "bg-yellow-100";
     }
-  }
+  };
 
   return (
     <div className="container mx-auto">
@@ -101,6 +101,7 @@ const OrderDashboard = () => {
             <th className="py-2 px-4 bg-gray-300 border-b">Quantity</th>
             <th className="py-2 px-4 bg-gray-300 border-b">User Name</th>
             <th className="py-2 px-4 bg-gray-300 border-b">Price</th>
+            <th className="py-2 px-4 bg-gray-300 border-b">Prescription</th>
             <th className="py-2 px-4 bg-gray-300 border-b">Address</th>
             <th className="py-2 px-4 bg-gray-300 border-b">Contact Number</th>
             <th className="py-2 px-4 bg-gray-300 border-b">Status</th>
@@ -133,6 +134,26 @@ const OrderDashboard = () => {
                 <td className="py-2 px-4 border-b text-center">
                   ${order.price}
                 </td>
+                <td className="py-2 px-4 border-b text-center">
+                  {order.prescription && (
+                    <a
+                      href={order.prescription}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={order.prescription}
+                        alt="Prescription"
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                        }}
+                      />
+                    </a>
+                  )}
+                </td>
+
                 <td className="py-2 px-4 border-b text-center">
                   {order.address}
                 </td>
@@ -213,7 +234,7 @@ const OrderDashboard = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default OrderDashboard
+export default OrderDashboard;

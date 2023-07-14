@@ -1,94 +1,122 @@
-import axios from "axios"
-import { useFormik } from "formik"
-import React, { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { useNavigate } from "react-router-dom"
-import { clearCart } from "../../Components/Actions/Action"
+import axios from "axios";
+import { useFormik } from "formik";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { clearCart } from "../../Components/Actions/Action";
 
 const PlaceOrder = ({ items, onHide }) => {
-  const cartItems = useSelector((state) => state.cartItems)
-  const navigate = useNavigate()
-  const firstName = localStorage.getItem("firstName")
-  const userID = localStorage.getItem("id")
-  const { v4: uuidv4 } = require("uuid")
-  const dispatch = useDispatch()
+  const cartItems = useSelector((state) => state.cartItems);
+  const navigate = useNavigate();
+  const firstName = localStorage.getItem("firstName");
+  const userID = localStorage.getItem("id");
+  const { v4: uuidv4 } = require("uuid");
+  const dispatch = useDispatch();
+  const [prescriptionFile, setPrescriptionFile] = useState(null);
 
   const groupedItems = cartItems.reduce((acc, item) => {
     const existingItem = acc.find(
       (groupedItem) => groupedItem.productName === item.productName
-    )
+    );
     if (existingItem) {
-      existingItem.quantity += item.quantity
+      existingItem.quantity += item.quantity;
     } else {
-      acc.push({ ...item })
+      acc.push({ ...item });
     }
-    return acc
-  }, [])
-  console.log("groupedItems", groupedItems)
+    return acc;
+  }, []);
+  console.log("groupedItems", groupedItems);
   const totalPriceSum = groupedItems.reduce(
     (sum, item) => sum + Number(item.price) * item.quantity,
     0
-  )
+  );
 
   const formik = useFormik({
     initialValues: {
       contactNumber: "",
       address: "",
+      prescription: null,
     },
     onSubmit: async (values) => {
-      const orderItems = groupedItems.map((item) => ({
-        ...item,
-        ...values,
-        firstName: firstName,
-        userID: userID,
-        _id: uuidv4(),
-        productID: item._id,
-        price: Number(item.price) * item.quantity,
-      }))
+      const apiKey = "f633b9b2b900fa4ce91d346d6b992734";
+      const url = "https://api.imgbb.com/1/upload";
+      const formData = new FormData();
+
+      formData.append("image", prescriptionFile);
+      formData.append("key", apiKey);
+      const config = {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
+      };
+      let imageUrl = "";
+      if (prescriptionFile) {
+        const imgbbResponse = await axios.post(url, formData, config);
+        imageUrl = imgbbResponse.data.data.url;
+      }
+      const orderItems = groupedItems.map((item) => {
+        const orderItem = {
+          ...item,
+          ...values,
+          firstName: firstName,
+          userID: userID,
+          _id: uuidv4(),
+          productID: item._id,
+          price: Number(item.price) * item.quantity,
+        };
+
+        if (item.isPrescribed) {
+          if (!values.prescription) {
+            formik.setFieldError("prescription", "Prescription is required");
+            return;
+          } else {
+            orderItem.prescription = imageUrl;
+          }
+        }
+        return orderItem;
+      });
+      if (orderItems.some((item) => !item)) {
+        return;
+      }
 
       try {
-        // Example: Submit the form data to an API
         const response = await axios.post(
           "http://localhost:5000/order",
           orderItems
-        )
-        console.log("Order placed successfully!", response.data)
-
-        // Clear the form inputs after successful submission
-        formik.resetForm()
-        onHide()
-        dispatch(clearCart())
-
-        // Navigate to a different page after successful submission
-        navigate("/order-dashboard")
+        );
+        console.log("Order placed successfully!", response.data);
+        formik.resetForm();
+        onHide();
+        dispatch(clearCart());
+        navigate("/order-dashboard");
       } catch (error) {
-        console.error("Failed to place order!", error)
+        console.error("Failed to place order!", error);
       }
     },
     validate: (values) => {
-      const errors = {}
+      const errors = {};
 
       if (!values.contactNumber) {
-        errors.contactNumber = "Contact number is required"
+        errors.contactNumber = "Contact number is required";
       }
 
       if (!values.address) {
-        errors.address = "Address is required"
+        errors.address = "Address is required";
       }
 
-      return errors
+      return errors;
     },
-  })
+  });
 
-  console.log("Item from previous page", items)
+  console.log("Item from previous page", items);
 
   const handleContactNumberChange = (e) => {
-    formik.setFieldValue("contactNumber", e.target.value)
-  }
+    formik.setFieldValue("contactNumber", e.target.value);
+  };
 
   const handleAddressChange = (e) => {
-    formik.setFieldValue("address", e.target.value)
-  }
+    formik.setFieldValue("address", e.target.value);
+  };
 
   return (
     <div>
@@ -126,6 +154,28 @@ const PlaceOrder = ({ items, onHide }) => {
           ></textarea>
           {formik.touched.address && formik.errors.address && (
             <div className="text-red-500">{formik.errors.address}</div>
+          )}
+        </div>
+        <div className="mb-4">
+          <label htmlFor="prescription" className="block mb-1 font-semibold">
+            Upload Prescription:
+          </label>
+          <input
+            type="file"
+            id="prescription"
+            className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:border-primary"
+            onChange={(event) => {
+              formik.setFieldValue(
+                "prescription",
+                event.currentTarget.files[0]
+              );
+              setPrescriptionFile(event.currentTarget.files[0]);
+            }}
+          />
+          {formik.touched.prescription && formik.errors.prescription && (
+            <div className="text-red-500 mt-1">
+              {formik.errors.prescription}
+            </div>
           )}
         </div>
 
@@ -187,7 +237,7 @@ const PlaceOrder = ({ items, onHide }) => {
         </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default PlaceOrder
+export default PlaceOrder;

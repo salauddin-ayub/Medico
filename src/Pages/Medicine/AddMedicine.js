@@ -1,14 +1,14 @@
-import axios from "axios"
-import { useFormik } from "formik"
-import React, { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { toast } from "react-toastify"
-import { CommonButton } from "../../Components/Button/Button"
+import axios from "axios";
+import { useFormik } from "formik";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { CommonButton } from "../../Components/Button/Button";
 
 const AddMedicine = () => {
-  const [loading, setLoading] = useState(false)
-  const [image, setImage] = useState(null)
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState(null);
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       productName: "",
@@ -18,51 +18,52 @@ const AddMedicine = () => {
       companName: "",
       productType: "",
       weight: "",
+      isPrescribed: false,
     },
     // validationSchema: signUpSchema,
     onSubmit: (values, { resetForm }) => {
-      console.log(values)
-      handleSubmit(values)
+      console.log(values);
+      handleSubmit(values);
     },
     enableReinitialize: true,
     validateOnChange: false,
-  })
-  const apiKey = "f633b9b2b900fa4ce91d346d6b992734"
+  });
+  const apiKey = "f633b9b2b900fa4ce91d346d6b992734";
   const handleSubmit = async (values) => {
-    setLoading(true)
-    const url = "https://api.imgbb.com/1/upload"
-    const formData = new FormData()
+    setLoading(true);
+    const url = "https://api.imgbb.com/1/upload";
+    const formData = new FormData();
 
-    formData.append("image", image)
-    formData.append("key", apiKey)
+    formData.append("image", image);
+    formData.append("key", apiKey);
     const config = {
       headers: {
         "content-type": "multipart/form-data",
       },
-    }
+    };
 
     try {
-      const imgbbResponse = await axios.post(url, formData, config)
-      const imageUrl = imgbbResponse.data.data.url
+      const imgbbResponse = await axios.post(url, formData, config);
+      const imageUrl = imgbbResponse.data.data.url;
       const allData = {
         ...values,
         image: imageUrl,
-      }
+      };
       const anotherApiResponse = await axios.post(
         "http://localhost:5000/medisin",
         // "https://prime-automation-server-production.up.railway.app/product",
         allData
-      )
-      console.log(anotherApiResponse)
-      toast.success("Medicine Added successfully")
-      navigate("/")
+      );
+      console.log(anotherApiResponse);
+      toast.success("Medicine Added successfully");
+      navigate("/");
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
   const handleImage = (e) => {
-    setImage(e.target.files[0])
-  }
+    setImage(e.target.files[0]);
+  };
   return (
     <div className="mt-5">
       <div>
@@ -211,6 +212,37 @@ const AddMedicine = () => {
                   placeholder="productType"
                 />
               </div>
+              <div className="mt-4 text-left">
+                <label
+                  className="block mb-2 text-sm font-medium text-black dark:text-black"
+                  htmlFor="isPrescribed"
+                >
+                  Is Prescribed
+                </label>
+                <div className="flex items-center">
+                  <input
+                    id="isPrescribed"
+                    name="isPrescribed"
+                    type="checkbox"
+                    className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    checked={formik.values.isPrescribed}
+                  />
+                  <label
+                    className="ml-2 text-sm text-gray-700 dark:text-gray-400"
+                    htmlFor="isPrescribed"
+                  >
+                    {formik.values.isPrescribed ? "Yes" : "No"}
+                  </label>
+                </div>
+                {formik.touched.isPrescribed && formik.errors.isPrescribed && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.isPrescribed}
+                  </div>
+                )}
+              </div>
+
               <div className="mt-4">
                 <div className="flex justify-between">
                   <label
@@ -260,7 +292,7 @@ const AddMedicine = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddMedicine
+export default AddMedicine;

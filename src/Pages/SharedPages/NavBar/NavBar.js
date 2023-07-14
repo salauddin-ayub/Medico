@@ -103,37 +103,39 @@ const NavBar = () => {
     }
   }
 
+  const role = localStorage.getItem("role")
+
   const navbar = (
     <>
       <li className="font-semibold text-base">
         <Link to="/">Home</Link>
       </li>
-      <li className="font-semibold text-base">
+      {/* <li className="font-semibold text-base">
         <Link to="/otc-drugs">OTC Drugs</Link>
-      </li>
+      </li> */}
       <li className="font-semibold text-base">
         <Link to="/order-dashboard">Dashboard</Link>
       </li>
+      {role === "superAdmin" && (
+        <li className="font-semibold text-base">
+          <Link to="/add-medicine">Add Medicine</Link>
+        </li>
+      )}
+
       <li className="font-semibold text-base">
-        <Link to="/add-medicine">Add Medicine</Link>
+        <Link to="/prediction">Prediction</Link>
       </li>
-      <li className="font-semibold text-base">
-        <Link to="/review">Review</Link>
-      </li>
-      <li className="font-semibold text-base">
-        <Link to="/assign-role">Assign Role</Link>
-      </li>
+
+      {role === "superAdmin" && (
+        <li className="font-semibold text-base">
+          <Link to="/assign-role">Assign Role</Link>
+        </li>
+      )}
       <li className="font-semibold text-base">
         <Link to="/about-us">About Us</Link>
       </li>
       <li className="font-semibold text-base">
         <Link to="/contact">Contact Us</Link>
-      </li>
-
-      <li className="font-semibold text-base">
-        <Link to="/card" className="hover:bg-primary">
-          card
-        </Link>
       </li>
     </>
   )
