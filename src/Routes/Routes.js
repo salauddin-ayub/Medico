@@ -14,6 +14,8 @@ import Registration from "../Pages/Authentication/Registration";
 import PlaceOrder from "../Pages/Order/PlaceOrder";
 import OrderDashboard from "../Pages/Order/OrderDashboard";
 import AssignRole from "../Pages/RoleAssign/AssignRole";
+import AllMedine from "../Pages/Medicine/AllMedine";
+import EditMedicine from "../Pages/Medicine/EditMedicine";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +46,10 @@ const router = createBrowserRouter([
         path: "/order-dashboard",
         element: <OrderDashboard></OrderDashboard>,
       },
+      {
+        path: "/all-medicine",
+        element: <AllMedine></AllMedine>,
+      },
 
       {
         path: "/otc-drugs",
@@ -52,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: "/add-medicine",
         element: <AddMedicine></AddMedicine>,
+      },
+      {
+        path: "/edit-medicine/:id",
+        element: <EditMedicine></EditMedicine>,
       },
       {
         path: "/disease-prediction",

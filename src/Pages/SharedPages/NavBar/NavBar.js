@@ -1,109 +1,109 @@
-import React, { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
-import logo from "../../../assets/logo.png"
-import { FaSearch, FaCartPlus } from "react-icons/fa"
-import { RiArrowDownSLine } from "react-icons/ri"
-import PrimaryButton from "../../../Components/PrimaryButton/PrimaryButton"
-import { useCart } from "react-use-cart"
-import axios from "axios"
-import ReactModal from "react-modal"
-import { useDispatch, useSelector } from "react-redux"
-import { useNavigate } from "react-router-dom"
-import { Dialog } from "primereact/dialog"
-import PlaceOrder from "../../Order/PlaceOrder"
-import { HiUserCircle } from "react-icons/hi"
-import { clearCart } from "../../../Components/Actions/Action"
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import logo from "../../../assets/logo.png";
+import { FaSearch, FaCartPlus } from "react-icons/fa";
+import { RiArrowDownSLine } from "react-icons/ri";
+import PrimaryButton from "../../../Components/PrimaryButton/PrimaryButton";
+import { useCart } from "react-use-cart";
+import axios from "axios";
+import ReactModal from "react-modal";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { Dialog } from "primereact/dialog";
+import PlaceOrder from "../../Order/PlaceOrder";
+import { HiUserCircle } from "react-icons/hi";
+import { clearCart } from "../../../Components/Actions/Action";
 
 const NavBar = () => {
-  const [loading, setLoading] = useState(false)
-  const [products, setProducts] = useState([])
-  const navigate = useNavigate()
-  const [showModal, setShowModal] = useState(false)
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const dispatch = useDispatch();
 
-  const cartItems = useSelector((state) => state.cartItems)
-  const totalCount = cartItems.length
+  const cartItems = useSelector((state) => state.cartItems);
+  const totalCount = cartItems.length;
 
-  console.log("Cart Items", cartItems)
+  console.log("Cart Items", cartItems);
 
   //Search related states
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showResults, setShowResults] = useState(false)
-  const [searchResults, setSearchResults] = useState([])
-  const [items, setItems] = useState([])
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showResults, setShowResults] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [items, setItems] = useState([]);
 
-  console.log("Search---->Result", searchResults)
+  console.log("Search---->Result", searchResults);
 
   //fETCH Products
   const ProductData = async (value) => {
     try {
-      setLoading(true)
+      setLoading(true);
       await axios
         .get(`http://localhost:5000/medisin`)
         .then(function (res) {
-          setLoading(false)
-          setProducts(res?.data)
+          setLoading(false);
+          setProducts(res?.data);
 
-          console.log(res?.data)
+          console.log(res?.data);
         })
         .catch(function (error) {
-          setLoading(false)
-        })
+          setLoading(false);
+        });
     } catch (err) {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSearch = () => {
     // Filter the products array based on the search term
     const filteredResults = products.filter((product) =>
       product.productName.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    );
 
-    setSearchResults(filteredResults)
-    setShowResults(true)
-  }
+    setSearchResults(filteredResults);
+    setShowResults(true);
+  };
   useEffect(() => {
-    ProductData()
-  }, [])
+    ProductData();
+  }, []);
 
   const handleChange = (event) => {
-    setSearchTerm(event.target.value)
-  }
+    setSearchTerm(event.target.value);
+  };
   const closeModal = () => {
-    setShowResults(false)
-  }
+    setShowResults(false);
+  };
 
   const groupedItems = cartItems.reduce((acc, item) => {
     const existingItem = acc.find(
       (groupedItem) => groupedItem.productName === item.productName
-    )
+    );
     if (existingItem) {
-      existingItem.quantity += item.quantity
+      existingItem.quantity += item.quantity;
     } else {
-      acc.push({ ...item })
+      acc.push({ ...item });
     }
-    return acc
-  }, [])
+    return acc;
+  }, []);
 
   // Calculate the total price sum
   const totalPriceSum = groupedItems.reduce(
     (sum, item) => sum + Number(item.price) * item.quantity,
     0
-  )
-  const storedId = localStorage.getItem("id")
+  );
+  const storedId = localStorage.getItem("id");
 
   const handlePlaceOrder = () => {
     if (!storedId) {
-      navigate("/login")
-      setShowModal(false)
+      navigate("/login");
+      setShowModal(false);
     } else {
-      setShowModal(true)
-      setItems(groupedItems)
+      setShowModal(true);
+      setItems(groupedItems);
     }
-  }
+  };
 
-  const role = localStorage.getItem("role")
+  const role = localStorage.getItem("role");
 
   const navbar = (
     <>
@@ -119,6 +119,11 @@ const NavBar = () => {
       {role === "superAdmin" && (
         <li className="font-semibold text-base">
           <Link to="/add-medicine">Add Medicine</Link>
+        </li>
+      )}
+      {role === "superAdmin" && (
+        <li className="font-semibold text-base">
+          <Link to="/all-medicine">All Medicine</Link>
         </li>
       )}
 
@@ -138,7 +143,7 @@ const NavBar = () => {
         <Link to="/contact">Contact Us</Link>
       </li>
     </>
-  )
+  );
 
   const dropDownList = (
     <>
@@ -198,24 +203,24 @@ const NavBar = () => {
         </Link>
       </li>
     </>
-  )
+  );
   const onHide = () => {
-    setShowResults(false)
-    setShowModal(false)
-  }
-  const userID = localStorage.getItem("id")
-  const firstName = localStorage.getItem("firstName")
-  const lastName = localStorage.getItem("lastName")
+    setShowResults(false);
+    setShowModal(false);
+  };
+  const userID = localStorage.getItem("id");
+  const firstName = localStorage.getItem("firstName");
+  const lastName = localStorage.getItem("lastName");
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/logout")
-      localStorage.clear() // Clear the entire localStorage
-      window.location.href = "/"
+      await axios.post("http://localhost:5000/logout");
+      localStorage.clear(); // Clear the entire localStorage
+      window.location.href = "/";
     } catch (error) {
-      console.error("Error during logout:", error)
+      console.error("Error during logout:", error);
     }
-  }
+  };
 
   return (
     <div className="sticky top-0 z-30 w-full bg-white">
@@ -471,7 +476,7 @@ const NavBar = () => {
         </Dialog>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default NavBar
+export default NavBar;
